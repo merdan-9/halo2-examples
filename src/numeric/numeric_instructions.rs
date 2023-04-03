@@ -134,7 +134,7 @@ impl<F: FieldExt> NumericInstructions<F> for FieldChip<F>  {
         layouter.assign_region(
             || "mul", 
             |mut region| {
-                config.selector.enable(&mut region, 0);
+                config.selector.enable(&mut region, 0)?;
 
                 a.0.copy_advice(|| "lhs", &mut region, config.advice[0], 0)?;
                 b.0.copy_advice(|| "rhs", &mut region, config.advice[1], 0)?;
@@ -198,27 +198,37 @@ impl<F: FieldExt> Circuit<F> for MyCircuit<F> {
     }
 }
 
-fn main() {
-    use halo2_proofs::{dev::MockProver, pasta::Fp};
-
-    let k = 4;
-    let constant = Fp::from(7);
-    let a = Fp::from(2);
-    let b = Fp::from(3);
-    let c = constant * a.square() * b.square();
-
-    let circuit = MyCircuit {
-        constant,
-        a: Value::known(a),
-        b: Value::known(b),
+#[cfg(test)]
+mod tests {
+    use halo2_proofs::{
+        dev::MockProver, 
+        pasta::Fp, 
+        circuit::Value
     };
-
-    let mut public_input = vec![c];
-
-    let prover = MockProver::run(k, &circuit, vec![public_input.clone()]).unwrap();
-    prover.assert_satisfied();
+    use super::MyCircuit;
     
-    public_input[0] += Fp::one();
-    let prover = MockProver::run(k, &circuit, vec![public_input]).unwrap();
-    assert!(prover.verify().is_err());
+    #[test]
+    fn numeric_instructions() {
+
+        let k = 4;
+        let constant = Fp::from(7);
+        let a = Fp::from(2);
+        let b = Fp::from(3);
+        let c = constant * a.square() * b.square();
+
+        let circuit = MyCircuit {
+            constant,
+            a: Value::known(a),
+            b: Value::known(b),
+        };
+
+        let mut public_input = vec![c];
+
+        let prover = MockProver::run(k, &circuit, vec![public_input.clone()]).unwrap();
+        prover.assert_satisfied();
+        
+        public_input[0] += Fp::one();
+        let prover = MockProver::run(k, &circuit, vec![public_input]).unwrap();
+        assert!(prover.verify().is_err());
+    }
 }
