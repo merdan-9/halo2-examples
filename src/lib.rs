@@ -1,1 +1,2 @@
 mod numeric;
+mod fibonacci;
