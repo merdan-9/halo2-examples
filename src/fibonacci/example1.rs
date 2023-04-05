@@ -136,7 +136,7 @@ impl<F: FieldExt> FibonacciChip<F> {
     fn expose_public(
         &self,
         mut layouter: impl Layouter<F>,
-        cell: &AssignedCell<F, F>,
+        cell: AssignedCell<F, F>,
         row: usize
     ) -> Result<(), Error> {
         layouter.constrain_instance(cell.cell(), self.config.instance, row)
@@ -170,7 +170,7 @@ impl<F: FieldExt> Circuit<F> for MyCircuit<F> {
             prev_c = c_cell;
         }
 
-        chip.expose_public(layouter.namespace(|| "out"), &prev_c, 2)?;
+        chip.expose_public(layouter.namespace(|| "out"), prev_c, 2)?;
 
         Ok(())
     }
@@ -188,7 +188,7 @@ mod tests {
     #[test]
     fn fibonacci_example1() {
         let k = 4;
-        
+
         let a = Fp::from(1);
         let b = Fp::from(1);
         let out = Fp::from(55);
