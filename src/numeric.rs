@@ -1,1 +1,1 @@
-mod numeric_instructions;
+mod numeric;

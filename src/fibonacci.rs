@@ -1,1 +1,1 @@
-mod example1;
+mod fibonacci1;

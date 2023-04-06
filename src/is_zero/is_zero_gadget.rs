@@ -6,27 +6,27 @@ use halo2_proofs::{
 };
 
 #[derive(Clone, Debug)]
-struct IsZeroConfig<F> {
+pub struct IsZeroConfig<F> {
     value_inv: Column<Advice>,
     is_zero_expr: Expression<F>,
 }
 
 impl<F: FieldExt> IsZeroConfig<F> {
-    fn expr(&self) -> Expression<F> {
+    pub fn expr(&self) -> Expression<F> {
         self.is_zero_expr.clone()
     }
 }
 
-struct IsZeroChip<F> {
+pub struct IsZeroChip<F> {
     config: IsZeroConfig<F>,
 }
 
 impl<F: FieldExt> IsZeroChip<F> {
-    fn construct(config: IsZeroConfig<F>) -> Self {
+    pub fn construct(config: IsZeroConfig<F>) -> Self {
         IsZeroChip { config }
     }
 
-    fn configure(
+    pub fn configure(
         meta: &mut ConstraintSystem<F>,
         q_enable: impl FnOnce(&mut VirtualCells<'_, F>) -> Expression<F>,
         value: impl FnOnce(&mut VirtualCells<'_, F>) -> Expression<F>,
@@ -50,7 +50,7 @@ impl<F: FieldExt> IsZeroChip<F> {
         }
     }
 
-    fn assign(
+    pub fn assign(
         &self,
         region: &mut Region<'_, F>,
         offset: usize,
